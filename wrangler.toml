@@ -1,0 +1,28 @@
+name = "jhedai-api"
+main = "src/index.ts"
+compatibility_date = "2025-02-23"
+
+# Variables de entorno
+[vars]
+FRONTEND_URL = "https://jhedai-redesign.vercel.app"
+ALLOWED_ORIGINS = "https://jhedai-redesign.vercel.app,http://localhost:5173"
+
+# Configuración de build
+[build]
+command = "npm run build"
+
+# D1 Database (opcional - descomentar cuando esté configurado)
+# [[d1_databases]]
+# binding = "DB"
+# database_name = "jhedai-db"
+# database_id = "your-database-id"
+
+# KV Storage (opcional - descomentar cuando esté configurado)
+# [[kv_namespaces]]
+# binding = "KV"
+# id = "your-kv-id"
+
+# R2 Storage (opcional - para archivos)
+# [[r2_buckets]]
+# binding = "BUCKET"
+# bucket_name = "jhedai-files"

@@ -11,6 +11,7 @@ export interface Env {
   JHEDAI_CACHE: KVNamespace;
   RESEND_API_KEY?: string;
   API_KEY?: string;
+  PAGES_DEPLOY_HOOK?: string;
 }
 
 // KV TTLs in seconds
@@ -484,6 +485,11 @@ async function invalidatePostCache(kv: KVNamespace, slug: string): Promise<void>
   ]);
 }
 
+async function triggerDeploy(env: Env): Promise<void> {
+  if (!env.PAGES_DEPLOY_HOOK) return;
+  await fetch(env.PAGES_DEPLOY_HOOK, { method: 'POST' });
+}
+
 /**
  * POST /api/blog/posts — create a new blog post (auth required)
  */
@@ -521,6 +527,7 @@ export async function handleCreateBlogPost(request: Request, env: Env): Promise<
     ).run();
 
     await invalidatePostCache(env.JHEDAI_CACHE, body.slug as string);
+    await triggerDeploy(env);
 
     return corsResponse(
       { success: true, data: { id: result.meta.last_row_id, slug: body.slug } },
@@ -586,6 +593,7 @@ export async function handleUpdateBlogPost(request: Request, env: Env, slug: str
     }
 
     await invalidatePostCache(env.JHEDAI_CACHE, slug);
+    await triggerDeploy(env);
 
     return corsResponse({ success: true }, request, { status: 200, headers: { 'Content-Type': 'application/json' } });
   } catch (error) {
@@ -612,6 +620,7 @@ export async function handleDeleteBlogPost(request: Request, env: Env, slug: str
     }
 
     await invalidatePostCache(env.JHEDAI_CACHE, slug);
+    await triggerDeploy(env);
 
     return corsResponse({ success: true }, request, { status: 200, headers: { 'Content-Type': 'application/json' } });
   } catch (error) {

@@ -506,6 +506,14 @@ export async function handleCreateBlogPost(request: Request, env: Env): Promise<
       return corsResponse({ error: 'slug and title are required' }, request, { status: 400, headers: { 'Content-Type': 'application/json' } });
     }
 
+    // Defensive: some clients send author as a nested object ({name, avatar, ...}).
+    // D1 can only bind scalars — coerce to the author's name string.
+    if (typeof body.author === 'object' && body.author !== null) {
+      const authorObj = body.author as { name?: string; avatar?: string };
+      body.author = authorObj.name ?? null;
+      if (!body.author_avatar && authorObj.avatar) body.author_avatar = authorObj.avatar;
+    }
+
     const result = await env.DB.prepare(`
       INSERT INTO blog_posts (slug, title, excerpt, content, category, author, author_avatar, tags, read_time, featured,
         featured_image, featured_image_alt, meta_title, meta_description, published_date,

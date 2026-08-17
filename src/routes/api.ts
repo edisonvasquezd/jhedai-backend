@@ -12,6 +12,7 @@ export interface Env {
   RESEND_API_KEY?: string;
   API_KEY?: string;
   PAGES_DEPLOY_HOOK?: string;
+  PAGES_DEPLOY_TOKEN?: string;
 }
 
 // KV TTLs in seconds
@@ -487,7 +488,9 @@ async function invalidatePostCache(kv: KVNamespace, slug: string): Promise<void>
 
 async function triggerDeploy(env: Env): Promise<void> {
   if (!env.PAGES_DEPLOY_HOOK) return;
-  await fetch(env.PAGES_DEPLOY_HOOK, { method: 'POST' });
+  const headers: Record<string, string> = {};
+  if (env.PAGES_DEPLOY_TOKEN) headers['Authorization'] = `Bearer ${env.PAGES_DEPLOY_TOKEN}`;
+  await fetch(env.PAGES_DEPLOY_HOOK, { method: 'POST', headers });
 }
 
 /**

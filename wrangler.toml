@@ -11,16 +11,16 @@ ALLOWED_ORIGINS = "https://jhedai-redesign.vercel.app,http://localhost:5173"
 [build]
 command = "npm run build"
 
-# D1 Database (opcional - descomentar cuando esté configurado)
-# [[d1_databases]]
-# binding = "DB"
-# database_name = "jhedai-db"
-# database_id = "your-database-id"
+# D1 Database
+[[d1_databases]]
+binding = "DB"
+database_name = "jhedai-db"
+database_id = "29c3ab5b-17c2-436e-9216-3285866a024c"
 
-# KV Storage (opcional - descomentar cuando esté configurado)
-# [[kv_namespaces]]
-# binding = "KV"
-# id = "your-kv-id"
+# KV Cache
+[[kv_namespaces]]
+binding = "JHEDAI_CACHE"
+id = "9ce3757d7c784bd28fd4e266f28cbf46"
 
 # R2 Storage (opcional - para archivos)
 # [[r2_buckets]]

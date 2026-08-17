@@ -6,6 +6,11 @@ compatibility_date = "2025-02-23"
 [vars]
 FRONTEND_URL = "https://jhedai-redesign.vercel.app"
 ALLOWED_ORIGINS = "https://jhedai-redesign.vercel.app,http://localhost:5173"
+# Al publicar/editar/borrar un post, dispara el rebuild del sitio estático
+# vía GitHub Actions (repository_dispatch). Requiere el secret
+# PAGES_DEPLOY_TOKEN (GitHub PAT con Contents: read/write sobre jhedai-astro):
+#   npx wrangler secret put PAGES_DEPLOY_TOKEN
+PAGES_DEPLOY_HOOK = "https://api.github.com/repos/edisonvasquezd/jhedai-astro/dispatches"
 
 # Configuración de build
 [build]

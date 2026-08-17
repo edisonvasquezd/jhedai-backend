@@ -488,9 +488,28 @@ async function invalidatePostCache(kv: KVNamespace, slug: string): Promise<void>
 
 async function triggerDeploy(env: Env): Promise<void> {
   if (!env.PAGES_DEPLOY_HOOK) return;
-  const headers: Record<string, string> = {};
+  const headers: Record<string, string> = {
+    // GitHub's repository_dispatch endpoint requires these; harmless for
+    // any other webhook target
+    'Accept': 'application/vnd.github+json',
+    'User-Agent': 'jhedai-api-deploy-hook',
+    'Content-Type': 'application/json',
+  };
   if (env.PAGES_DEPLOY_TOKEN) headers['Authorization'] = `Bearer ${env.PAGES_DEPLOY_TOKEN}`;
-  await fetch(env.PAGES_DEPLOY_HOOK, { method: 'POST', headers });
+  try {
+    const res = await fetch(env.PAGES_DEPLOY_HOOK, {
+      method: 'POST',
+      headers,
+      // event_type must match the repository_dispatch type in the workflow
+      body: JSON.stringify({ event_type: 'blog-published' }),
+    });
+    if (!res.ok) {
+      console.error('Deploy hook failed:', res.status, await res.text());
+    }
+  } catch (e) {
+    // A failed rebuild trigger must never fail the publish itself
+    console.error('Deploy hook error:', e instanceof Error ? e.message : e);
+  }
 }
 
 /**
